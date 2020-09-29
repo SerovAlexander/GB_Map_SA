@@ -1,0 +1,6 @@
+framework module Pods_GB_Map_SA {
+  umbrella header "Pods-GB_Map_SA-umbrella.h"
+
+  export *
+  module * { export * }
+}
