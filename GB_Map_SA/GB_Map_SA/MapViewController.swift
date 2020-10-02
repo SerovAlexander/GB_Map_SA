@@ -9,8 +9,6 @@
 import UIKit
 import GoogleMaps
 
-
-
 class MapViewController: UIViewController {
     
     //MARK:- Outlets
@@ -28,14 +26,13 @@ class MapViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        mapView.delegate = self
         configureMap()
-        configureLocationManager()
-        locationManager?.delegate = self
+        configurateLocationManager()
     }
     
     //MARK:- Func
     private func configureMap() {
+        mapView.delegate = self
         // Создаём камеру с использованием координат и уровнем увеличения
         let camera = GMSCameraPosition(target: coordinate, zoom: 15)
         // Устанавливаем камеру для карты
@@ -44,16 +41,22 @@ class MapViewController: UIViewController {
         mapView.settings.myLocationButton = true
     }
     
-    private func configureLocationManager() {
+    private func configurateLocationManager() {
         locationManager = CLLocationManager()
-        locationManager?.requestWhenInUseAuthorization()
+        locationManager?.delegate = self
+        locationManager?.allowsBackgroundLocationUpdates = true
+        locationManager?.pausesLocationUpdatesAutomatically = false
+//        locationManager?.startMonitoringSignificantLocationChanges()
+        locationManager?.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+        locationManager?.requestAlwaysAuthorization()
+        
     }
     // Установка и удалние маркера
     private func toggleMarker() {
         if marker == nil {
             let marker = GMSMarker(position: coordinate)
-                   marker.map = mapView
-                   self.marker = marker
+            marker.map = mapView
+            self.marker = marker
         } else {
             marker?.map = nil
             marker = nil
@@ -77,17 +80,6 @@ class MapViewController: UIViewController {
 }
 //MARK:- Extensions
 
-extension MapViewController: CLLocationManagerDelegate {
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        self.locations = locations.first
-        addMarker(position: locations.first!.coordinate)
-    }
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print(error)
-    }
-    
-}
-
 extension MapViewController: GMSMapViewDelegate {
     
     func mapView(_ mapView: GMSMapView, didTapAt coordinate: CLLocationCoordinate2D) {
@@ -99,7 +91,7 @@ extension MapViewController: GMSMapViewDelegate {
             self.manualMarker = marker
         }
     }
-// Обработка нажатия кнопки "Моя локация"
+    // Обработка нажатия кнопки "Моя локация"
     func didTapMyLocationButton(for mapView: GMSMapView) -> Bool {
         locationManager?.requestLocation()
         guard let location = self.locations else { return false }
@@ -108,4 +100,17 @@ extension MapViewController: GMSMapViewDelegate {
     }
 }
 
+extension MapViewController: CLLocationManagerDelegate {
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        self.locations = locations.first
+        addMarker(position: locations.first!.coordinate)
+        guard let location = self.locations else { return }
+        mapView.animate(toLocation: location.coordinate )
+    }
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print(error.localizedDescription)
+    }
+    
+}
 
