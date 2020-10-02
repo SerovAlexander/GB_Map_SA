@@ -9,8 +9,6 @@
 import UIKit
 import GoogleMaps
 
-
-
 class MapViewController: UIViewController {
     
     //MARK:- Outlets
@@ -45,8 +43,13 @@ class MapViewController: UIViewController {
     
     private func configurateLocationManager() {
         locationManager = CLLocationManager()
-        locationManager?.requestWhenInUseAuthorization()
         locationManager?.delegate = self
+        locationManager?.allowsBackgroundLocationUpdates = true
+        locationManager?.pausesLocationUpdatesAutomatically = false
+//        locationManager?.startMonitoringSignificantLocationChanges()
+        locationManager?.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+        locationManager?.requestAlwaysAuthorization()
+        
     }
     // Установка и удалние маркера
     private func toggleMarker() {
