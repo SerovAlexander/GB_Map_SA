@@ -16,7 +16,7 @@ class MapViewController: UIViewController {
     
     //MARK:- Properties
     
-    // Координаты центра Санкт-Петербурга
+    //Координаты центра Санкт-Петербурга
     private let coordinate = CLLocationCoordinate2D(latitude: 59.9421696, longitude: 30.3160677)
     private var marker: GMSMarker?
     private var manualMarker: GMSMarker?
